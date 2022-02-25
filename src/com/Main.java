@@ -27,13 +27,14 @@ public class Main {
         //Creating table for the Main excel sheet
         getTableHeader(statement,firstExcelPath,"ATTRIBUTES","CompareFromData");
         getTableHeader(statement,secondExcelPath,"ATTRIBUTES","CompareToData");
-        populateData(statement);
+        populateData(statement,firstExcelPath,"ATTRIBUTES","CompareFromData");
+        populateData(statement,firstExcelPath,"ATTRIBUTES","CompareFromData");
         con.close();
     }
-    public static void getTableHeader(Statement statement, String firstExcelPath, String sheetName, String tableName) throws IOException, SQLException {
+    public static void getTableHeader(Statement statement, String excelPath, String sheetName, String tableName) throws IOException, SQLException {
         statement.execute("DROP TABLE IF EXISTS "+tableName);
-        StringBuilder query = new StringBuilder("CREATE TABLE ExcelOne (");
-        FileInputStream excelFile1 = new FileInputStream(firstExcelPath);
+        StringBuilder query = new StringBuilder("CREATE TABLE "+tableName+ "(");
+        FileInputStream excelFile1 = new FileInputStream(excelPath);
         Workbook workbook1 = new XSSFWorkbook(excelFile1);
         Sheet sheet = workbook1.getSheet(sheetName);
         Row attributeHeaderRow;
@@ -48,14 +49,14 @@ public class Main {
         excelFile1.close();
         statement.execute(String.valueOf(query));
     }
-    public static void populateData(Statement statement,String firstExcelPath,String sheetName, String tableName) throws IOException, SQLException {
-        FileInputStream excelFile1 = new FileInputStream(firstExcelPath);
+    public static void populateData(Statement statement,String excelPath,String sheetName, String tableName) throws IOException, SQLException {
+        FileInputStream excelFile1 = new FileInputStream(excelPath);
         Workbook workbook1 = new XSSFWorkbook(excelFile1);
-        Sheet sheet = workbook1.getSheet("ATTRIBUTES");
+        Sheet sheet = workbook1.getSheet(sheetName);
         int rows = sheet.getLastRowNum();
         int headerRow = sheet.getRow(0).getLastCellNum();
         for(int i=1; i<=rows;i++){
-            StringBuilder query = new StringBuilder("insert into ExcelOne values( ");
+            StringBuilder query = new StringBuilder("insert into "+tableName+ " values(");
             Row row = sheet.getRow(i);
             System.out.println(headerRow);
             for(int j = 0; j< headerRow; j++) {
